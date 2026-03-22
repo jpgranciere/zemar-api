@@ -38,5 +38,25 @@ public class SupabaseStorageService {
 
         return SUPABASE_URL + "/storage/v1/object/public/produtosImagens/" + nomeAquivo;
     }
+
+    public String extrairNomeArquivo(String urlImagem){
+        int posicao = urlImagem.lastIndexOf("/");
+        return urlImagem.substring(posicao + 1);
+    }
+
+    public String deletarArquivo(String urlImagem){
+        String urlFormatada = extrairNomeArquivo(urlImagem);
+        String reqDeleteUrl = SUPABASE_URL + "/storage/v1/object/produtosImagens/" + urlFormatada;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(SERVICE_KEY);
+
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.exchange(reqDeleteUrl, HttpMethod.DELETE, request, String.class);
+
+        return "O arquivo foi deletado";
+    }
 }
 

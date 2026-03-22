@@ -1,5 +1,6 @@
 package com.zemar_api.produto;
 
+import ch.qos.logback.core.joran.action.ImplicitModelAction;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -31,5 +32,23 @@ public class Produto {
         this.categoria = dados.categoria();
         this.descricao = dados.descricao();
         this.imagemUrl = imagemUrl;
+    }
+
+    public void atualizarProduto(DadosAtualizarProduto dados, String imagemUrl) {
+        if(dados.nomeProduto() != null){
+            this.nomeProduto = dados.nomeProduto();
+        }
+        if(dados.codigoProduto() != null){
+            this.codigoProduto = dados.codigoProduto();
+        }
+        if(dados.categoria() != null){
+            this.categoria = dados.categoria();
+        }
+        if(dados.imagemUrl() != null){
+            this.imagemUrl = imagemUrl;
+        }
+        if(dados.descricao() != null){
+            this.descricao = dados.descricao();
+        }
     }
 }

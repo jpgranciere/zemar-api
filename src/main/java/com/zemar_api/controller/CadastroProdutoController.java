@@ -1,10 +1,10 @@
 package com.zemar_api.controller;
 
-import com.zemar_api.produto.DadosCadastroProduto;
-import com.zemar_api.produto.Produto;
-import com.zemar_api.produto.ProdutoRepository;
-import com.zemar_api.produto.SupabaseStorageService;
+import com.zemar_api.produto.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,4 +29,25 @@ public class CadastroProdutoController {
         repository.save(produto);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping
+    public Page<DadosListagemProduto> listar(@PageableDefault(size = 10, sort = "nomeProduto") Pageable paginacao){
+        return repository.findAll(paginacao).map(DadosListagemProduto::new);
+    }
+
+    @PutMapping(value = "/editar-produto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Transactional
+    public void atualizarProduto(@RequestPart("dados")DadosAtualizarProduto dados, @RequestPart(value = "imagem", required = false)MultipartFile imagem) throws Exception{
+        var produto = repository.getReferenceById(dados.id());
+
+        if(imagem != null && !imagem.isEmpty()){
+            storageService.deletarArquivo(produto.getImagemUrl());
+            String imagemUrlNova = storageService.uploadImagem(imagem);
+            produto.atualizarProduto(dados, imagemUrlNova);
+            return;
+        }
+
+        produto.atualizarProduto(dados, produto.getImagemUrl());
+    }
 }
+
