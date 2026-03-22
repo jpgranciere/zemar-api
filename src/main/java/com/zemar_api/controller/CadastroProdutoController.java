@@ -35,10 +35,10 @@ public class CadastroProdutoController {
         return repository.findAll(paginacao).map(DadosListagemProduto::new);
     }
 
-    @PutMapping(value = "/editar-produto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/editar-produto/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
-    public void atualizarProduto(@RequestPart("dados")DadosAtualizarProduto dados, @RequestPart(value = "imagem", required = false)MultipartFile imagem) throws Exception{
-        var produto = repository.getReferenceById(dados.id());
+    public void atualizarProduto(@PathVariable Long id ,@RequestPart(value = "dados", required = false)DadosAtualizarProduto dados, @RequestPart(value = "imagem", required = false)MultipartFile imagem) throws Exception{
+        var produto = repository.getReferenceById(id);
 
         if(imagem != null && !imagem.isEmpty()){
             storageService.deletarArquivo(produto.getImagemUrl());
@@ -46,6 +46,11 @@ public class CadastroProdutoController {
             produto.atualizarProduto(dados, imagemUrlNova);
             return;
         }
+
+        if(dados != null){
+            produto.atualizarProduto(dados, produto.getImagemUrl());
+        }
+
 
         produto.atualizarProduto(dados, produto.getImagemUrl());
     }
