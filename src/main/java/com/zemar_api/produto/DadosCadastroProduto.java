@@ -1,4 +1,22 @@
 package com.zemar_api.produto;
 
-public record DadosCadastroProduto(String nomeProduto, String codigoProduto, Categoria categoria, String descricao, String imagemUrl) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record DadosCadastroProduto(
+
+        @NotBlank
+        String nomeProduto,
+
+        @NotBlank
+        String codigoProduto,
+
+        @NotNull
+        Categoria categoria,
+
+        @NotBlank
+        String descricao,
+
+        String imagemUrl
+    ) {
 }

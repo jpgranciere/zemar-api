@@ -1,6 +1,7 @@
 package com.zemar_api.controller;
 
 import com.zemar_api.produto.*;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/admin")
@@ -23,36 +26,54 @@ public class CadastroProdutoController {
 
     @PostMapping(value = "/cadastrar-produto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
-    public ResponseEntity cadastrar(@RequestPart("dados")DadosCadastroProduto dados, @RequestPart("imagem")MultipartFile imagem) throws Exception{
+    public ResponseEntity cadastrar(@Valid @RequestPart("dados")DadosCadastroProduto dados, @RequestPart("imagem")MultipartFile imagem, UriComponentsBuilder uriBuilder) throws Exception{
         String imagemUrl = storageService.uploadImagem(imagem);
         Produto produto = new Produto(dados, imagemUrl);
         repository.save(produto);
-        return ResponseEntity.ok().build();
+
+        var uri = uriBuilder.path("/cadastrar-produto/{id}").buildAndExpand(produto.getId()).toUri();
+
+
+        return ResponseEntity.created(uri).body(new DadosDetalhamentoProduto(produto));
     }
 
     @GetMapping
-    public Page<DadosListagemProduto> listar(@PageableDefault(size = 10, sort = "nomeProduto") Pageable paginacao){
-        return repository.findAll(paginacao).map(DadosListagemProduto::new);
+    public ResponseEntity<Page<DadosListagemProduto>> listar(@PageableDefault(size = 10, sort = "nomeProduto") Pageable paginacao){
+        var page =  repository.findAll(paginacao).map(DadosListagemProduto::new);
+        return ResponseEntity.ok(page);
     }
 
     @PutMapping(value = "/editar-produto/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
-    public void atualizarProduto(@PathVariable Long id ,@RequestPart(value = "dados", required = false)DadosAtualizarProduto dados, @RequestPart(value = "imagem", required = false)MultipartFile imagem) throws Exception{
+    public ResponseEntity atualizarProduto(@PathVariable Long id ,
+                                           @RequestPart(value = "dados", required = false)DadosAtualizarProduto dados,
+                                           @RequestPart(value = "imagem", required = false)MultipartFile imagem) throws Exception{
         var produto = repository.getReferenceById(id);
 
         if(imagem != null && !imagem.isEmpty()){
             storageService.deletarArquivo(produto.getImagemUrl());
             String imagemUrlNova = storageService.uploadImagem(imagem);
             produto.atualizarProduto(dados, imagemUrlNova);
-            return;
+            return ResponseEntity.ok().build();
         }
 
         if(dados != null){
             produto.atualizarProduto(dados, produto.getImagemUrl());
+            return ResponseEntity.ok(new DadosDetalhamentoProduto(produto));
         }
 
-
-        produto.atualizarProduto(dados, produto.getImagemUrl());
+        return ResponseEntity.badRequest().build();
     }
+
+    @DeleteMapping(value = "/deletar-produto/{id}")
+    @Transactional
+    public ResponseEntity deletar(@PathVariable Long id){
+        var produto = repository.getReferenceById(id);
+        storageService.deletarProduto(produto);
+
+        return ResponseEntity.noContent().build();
+    }
+
+
 }
 
