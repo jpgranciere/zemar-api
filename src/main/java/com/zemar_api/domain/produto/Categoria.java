@@ -1,4 +1,4 @@
-package com.zemar_api.produto;
+package com.zemar_api.domain.produto;
 
 public enum Categoria {
     DETERGENTE,

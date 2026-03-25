@@ -1,4 +1,4 @@
-package com.zemar_api.produto;
+package com.zemar_api.domain.produto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,6 +17,7 @@ public record DadosCadastroProduto(
         @NotBlank
         String descricao,
 
+        @NotNull
         String imagemUrl
     ) {
 }

@@ -1,6 +1,6 @@
 package com.zemar_api.controller;
 
-import com.zemar_api.produto.*;
+import com.zemar_api.domain.produto.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
@@ -26,7 +25,7 @@ public class CadastroProdutoController {
 
     @PostMapping(value = "/cadastrar-produto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
-    public ResponseEntity cadastrar(@Valid @RequestPart("dados")DadosCadastroProduto dados, @RequestPart("imagem")MultipartFile imagem, UriComponentsBuilder uriBuilder) throws Exception{
+    public ResponseEntity cadastrar(@Valid @RequestPart("dados") DadosCadastroProduto dados, @RequestPart("imagem")MultipartFile imagem, UriComponentsBuilder uriBuilder) throws Exception{
         String imagemUrl = storageService.uploadImagem(imagem);
         Produto produto = new Produto(dados, imagemUrl);
         repository.save(produto);
@@ -54,7 +53,7 @@ public class CadastroProdutoController {
             storageService.deletarArquivo(produto.getImagemUrl());
             String imagemUrlNova = storageService.uploadImagem(imagem);
             produto.atualizarProduto(dados, imagemUrlNova);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(new DadosDetalhamentoProduto(produto));
         }
 
         if(dados != null){
@@ -72,6 +71,13 @@ public class CadastroProdutoController {
         storageService.deletarProduto(produto);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(value = "{id}")
+    public ResponseEntity listarProdutoDetalhado(@PathVariable Long id){
+        var produto = repository.getReferenceById(id);
+
+        return ResponseEntity.ok(new DadosDetalhamentoProduto(produto));
     }
 
 

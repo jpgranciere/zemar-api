@@ -1,4 +1,4 @@
-package com.zemar_api.produto;
+package com.zemar_api.domain.produto;
 
 public record DadosDetalhamentoProduto(Long id, String nomeProduto, String codigoProduto, Categoria categoria, String imagemUrl, String descricao) {
 

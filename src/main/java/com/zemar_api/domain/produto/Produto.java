@@ -1,6 +1,5 @@
-package com.zemar_api.produto;
+package com.zemar_api.domain.produto;
 
-import ch.qos.logback.core.joran.action.ImplicitModelAction;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
