@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
+
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/admin")
 public class CadastroProdutoController {
@@ -78,6 +81,13 @@ public class CadastroProdutoController {
         var produto = repository.getReferenceById(id);
 
         return ResponseEntity.ok(new DadosDetalhamentoProduto(produto));
+    }
+
+    @GetMapping(value = "/categoria")
+    public ResponseEntity<Categoria[]> listarCategoria() {
+        Categoria[] categorias = Categoria.values();
+
+        return ResponseEntity.ok(categorias);
     }
 
 

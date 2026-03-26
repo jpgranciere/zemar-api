@@ -1,5 +1,7 @@
 package com.zemar_api.domain.produto;
 
+import java.util.ArrayList;
+
 public enum Categoria {
     DETERGENTE,
     DESINFETANTE,
