@@ -39,12 +39,6 @@ public class CadastroProdutoController {
         return ResponseEntity.created(uri).body(new DadosDetalhamentoProduto(produto));
     }
 
-    @GetMapping
-    public ResponseEntity<Page<DadosListagemProduto>> listar(@PageableDefault(size = 10, sort = "nomeProduto") Pageable paginacao){
-        var page =  repository.findAll(paginacao).map(DadosListagemProduto::new);
-        return ResponseEntity.ok(page);
-    }
-
     @PutMapping(value = "/editar-produto/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
     public ResponseEntity atualizarProduto(@PathVariable Long id ,
@@ -74,20 +68,6 @@ public class CadastroProdutoController {
         storageService.deletarProduto(produto);
 
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping(value = "{id}")
-    public ResponseEntity listarProdutoDetalhado(@PathVariable Long id){
-        var produto = repository.getReferenceById(id);
-
-        return ResponseEntity.ok(new DadosDetalhamentoProduto(produto));
-    }
-
-    @GetMapping(value = "/categoria")
-    public ResponseEntity<Categoria[]> listarCategoria() {
-        Categoria[] categorias = Categoria.values();
-
-        return ResponseEntity.ok(categorias);
     }
 
 
