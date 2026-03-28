@@ -17,7 +17,6 @@ public record DadosCadastroProduto(
         @NotBlank
         String descricao,
 
-        @NotNull
         String imagemUrl
     ) {
 }

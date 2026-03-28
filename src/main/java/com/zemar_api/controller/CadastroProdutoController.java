@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -30,12 +30,13 @@ public class CadastroProdutoController {
     @Transactional
     public ResponseEntity cadastrar(@Valid @RequestPart("dados") DadosCadastroProduto dados, @RequestPart("imagem")MultipartFile imagem, UriComponentsBuilder uriBuilder) throws Exception{
         String imagemUrl = storageService.uploadImagem(imagem);
+        System.out.println(imagemUrl);
         Produto produto = new Produto(dados, imagemUrl);
         repository.save(produto);
 
         var uri = uriBuilder.path("/cadastrar-produto/{id}").buildAndExpand(produto.getId()).toUri();
 
-
+        System.out.println("dasdsaiodjsaiodiohsad" + imagemUrl);
         return ResponseEntity.created(uri).body(new DadosDetalhamentoProduto(produto));
     }
 
@@ -70,6 +71,11 @@ public class CadastroProdutoController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping
+    public ResponseEntity<Page<DadosListagemProdutoRecentes>> listarProdutosRecentes(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable paginacao){
+        var page = repository.findAll(paginacao).map(DadosListagemProdutoRecentes::new);
 
+        return ResponseEntity.ok(page);
+    }
 }
 
