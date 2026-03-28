@@ -10,5 +10,6 @@ public enum Categoria {
     PANOS_FLANELAS,
     LUVAS,
     SACOS_DE_LIXO,
-    LIMPEZA_PESADA
+    LIMPEZA_PESADA;
+
 }

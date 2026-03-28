@@ -26,7 +26,7 @@ public class Produto {
     private String imagemUrl;
 
     public Produto(DadosCadastroProduto dados, String imagemUrl) {
-        this.nomeProduto = dados.nomeProduto();
+        this.nomeProduto = dados.nomeProduto().toUpperCase();
         this.codigoProduto = dados.codigoProduto();
         this.categoria = dados.categoria();
         this.descricao = dados.descricao();

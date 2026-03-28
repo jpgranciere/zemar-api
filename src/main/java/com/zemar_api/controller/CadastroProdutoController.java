@@ -36,7 +36,6 @@ public class CadastroProdutoController {
 
         var uri = uriBuilder.path("/cadastrar-produto/{id}").buildAndExpand(produto.getId()).toUri();
 
-        System.out.println("dasdsaiodjsaiodiohsad" + imagemUrl);
         return ResponseEntity.created(uri).body(new DadosDetalhamentoProduto(produto));
     }
 

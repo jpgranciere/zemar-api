@@ -1,9 +1,6 @@
 package com.zemar_api.controller;
 
-import com.zemar_api.domain.produto.Categoria;
-import com.zemar_api.domain.produto.DadosDetalhamentoProduto;
-import com.zemar_api.domain.produto.DadosListagemProduto;
-import com.zemar_api.domain.produto.ProdutoRepository;
+import com.zemar_api.domain.produto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,4 +37,22 @@ public class ProdutoController {
         return ResponseEntity.ok(categorias);
     }
 
+    @GetMapping(value = "/categoria/{categoria}")
+    public ResponseEntity<Page<DadosDetalhamentoProduto>> getPorCategoria(@PathVariable String categoria, Pageable paginacao){
+        Categoria cat = Categoria.valueOf(categoria.toUpperCase());
+
+        var categoriaFormatada = repository.findByCategoria(cat, paginacao);
+
+        return ResponseEntity.ok(categoriaFormatada);
+    }
+
+    @GetMapping(value = "/nome/{nomeProduto}")
+    public ResponseEntity<Page<DadosDetalhamentoProduto>> getProdutoProNome(@PathVariable String nomeProduto, Pageable paginacao){
+        String nomeFormatado = nomeProduto.toUpperCase();
+
+        var produtos = repository.findByNomeProdutoContainingIgnoreCase(nomeFormatado, paginacao);
+        System.out.println(nomeFormatado);
+
+        return ResponseEntity.ok(produtos);
+    }
 }
